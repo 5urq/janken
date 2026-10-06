@@ -13,6 +13,39 @@
       align-items: center;
       justify-content: center;
       gap: 16px;
+      font-family: sans-serif;
+      margin-top: 40px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    input[type="text"] {
+      padding: 8px 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 220px;
+      text-align: center;
+    }
+
+    button {
+      width: 150px;
+      height: 45px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
@@ -20,9 +53,12 @@
 <body>
   <h1>じゃんけんゲーム</h1>
   <img src="janken_boys.png" alt="じゃんけんをしている男の子の画像" width="300" height="200">
-  <button type="button" style="width: 150px; height: 45px; font-size: 16px;">
-    開戦
-  </button>
+
+  <!-- Task 1: ユーザ名入力フォーム (POST) -->
+  <form action="/janken" method="post">
+    <input type="text" name="userName" placeholder="ユーザ名を入力" required>
+    <button type="submit">参加</button>
+  </form>
 </body>
 
 </html>

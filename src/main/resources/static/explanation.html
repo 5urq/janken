@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>じゃんけんアプリ 仕組みとコード徹底解説</title>
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --accent-color: #e74c3c;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --code-bg: #282c34;
+      --border-color: #e2e8f0;
+      --text-color: #334155;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.8;
+      color: var(--text-color);
+      background-color: var(--bg-color);
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 50px;
+      padding-bottom: 30px;
+      border-bottom: 3px solid var(--secondary-color);
+    }
+
+    h1 {
+      color: var(--primary-color);
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: #64748b;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 35px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      border: 1px solid var(--border-color);
+    }
+
+    h2 {
+      color: var(--primary-color);
+      border-left: 6px solid var(--secondary-color);
+      padding-left: 14px;
+      margin-top: 0;
+      font-size: 1.6rem;
+    }
+
+    h3 {
+      color: #1e293b;
+      margin-top: 25px;
+      font-size: 1.25rem;
+    }
+
+    .analogy-box {
+      background-color: #eff6ff;
+      border-left: 5px solid #3b82f6;
+      padding: 18px 24px;
+      border-radius: 0 8px 8px 0;
+      margin: 20px 0;
+    }
+
+    .analogy-title {
+      font-weight: bold;
+      color: #1d4ed8;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .diagram-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .diagram-item {
+      background: #f1f5f9;
+      padding: 16px;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid #cbd5e1;
+    }
+
+    .diagram-item .role {
+      font-weight: bold;
+      color: var(--secondary-color);
+      font-size: 1.1rem;
+    }
+
+    .diagram-item .actor {
+      font-size: 0.95rem;
+      color: #475569;
+      margin-top: 5px;
+    }
+
+    pre {
+      background-color: var(--code-bg);
+      color: #abb2bf;
+      padding: 18px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    code {
+      font-family: Consolas, Monaco, "Courier New", monospace;
+    }
+
+    .highlight {
+      color: #e5c07b;
+      font-weight: bold;
+    }
+
+    .comment {
+      color: #7f848e;
+      font-style: italic;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-right: 6px;
+    }
+
+    .badge-get {
+      background-color: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .badge-post {
+      background-color: #fef3c7;
+      color: #b45309;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+
+    th,
+    td {
+      border: 1px solid var(--border-color);
+      padding: 12px 16px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f8fafc;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    .back-btn {
+      display: inline-block;
+      background: var(--secondary-color);
+      color: white;
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+
+    .back-btn:hover {
+      background: #2980b9;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>じゃんけんアプリの構造と役割 徹底解説</h1>
+      <div class="subtitle">「なぜこのコードが必要なのか？」をレストランの例えで理解する</div>
+    </header>
+
+    <!-- セクション1: 全体の例え話 -->
+    <div class="card">
+      <h2>1. 全体像を「レストラン」に例えると？</h2>
+      <p>Webアプリケーション（Spring Boot）は、<strong>「役割分担されたチーム」</strong>で動いています。これをレストランに例えると直感的に理解できます。</p>
+
+      <div class="diagram-grid">
+        <div class="diagram-item">
+          <div class="role">① 玄関・メニュー表</div>
+          <div class="actor"><code>static/index.html</code></div>
+          <small>注文を書き込む用紙</small>
+        </div>
+        <div class="diagram-item">
+          <div class="role">② ウェイター（給仕係）</div>
+          <div class="actor"><code>JankenController.java</code></div>
+          <small>注文を受け取り各所へ指示</small>
+        </div>
+        <div class="diagram-item">
+          <div class="role">③ 専門シェフ（調理場）</div>
+          <div class="actor"><code>Janken.java (Model)</code></div>
+          <small>勝敗判定などの頭脳作業</small>
+        </div>
+        <div class="diagram-item">
+          <div class="role">④ 盛り付けとお皿</div>
+          <div class="actor"><code>templates/janken.html</code></div>
+          <small>料理を盛り付けて客に見せる</small>
+        </div>
+      </div>
+
+      <div class="analogy-box">
+        <div class="analogy-title">💡 レストランでの注文の流れ</div>
+        <ol>
+          <li>お客さん（ブラウザ）が <strong>玄関のメニュー表（index.html）</strong> で名前を書いて注文ボタン（POST）を押す。</li>
+          <li><strong>ウェイター（Controller）</strong> が注文票を受け取り、「新規客の案内だな」と判断。</li>
+          <li>客が「グーを出したよ！」と伝えると、ウェイターは <strong>専門シェフ（Model: Janken）</strong> に「相手の手を決めて勝敗を判定してくれ！」と依頼。</li>
+          <li>シェフが作った料理（結果データ）を、ウェイターが <strong>盛り付け係（View: janken.html）</strong> のお皿に乗せてお客さん（ブラウザ）に提供する。</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- セクション2: index.html の解説 -->
+    <div class="card">
+      <h2>2. <code>static/index.html</code> の役割（玄関・注文用紙）</h2>
+      <p>誰でも直接アクセスできる静的なHTMLファイルです。ユーザーに名前を入力してもらい、アプリの入り口となります。</p>
+
+      <pre><code><span class="comment">&lt;!-- 参加フォーム: POSTリクエストで /janken に送信 --&gt;</span>
+&lt;form action=<span class="highlight">"/janken"</span> method=<span class="highlight">"post"</span>&gt;
+  &lt;input type="text" name=<span class="highlight">"userName"</span> placeholder="ユーザ名を入力" required&gt;
+  &lt;button type="submit"&gt;参加&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+      <div class="analogy-box">
+        <div class="analogy-title">💡 なぜ POST（method="post"）を使うのか？</div>
+        <ul>
+          <li><strong>GETは「絵はがき」</strong>：URLの末尾（<code>?userName=taro</code>）に丸見えで届きます。</li>
+          <li><strong>POSTは「封筒」</strong>：データが封筒の中（リクエスト本文）に隠されて届くため、URLが汚れず、新規登録やゲーム参加などの「状態を変えるリクエスト」に適しています。</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- セクション3: JankenController.java の解説 -->
+    <div class="card">
+      <h2>3. <code>JankenController.java</code> の役割（司令塔・ウェイター）</h2>
+      <p>ブラウザから届いたリクエスト（URLや送信データ）を交通整理し、「次に何をすべきか」を采配します。</p>
+
+      <h3>① 直接URLを叩かれたときの処理（Task 1 [AC2] 対策）</h3>
+      <pre><code><span class="comment">// ブラウザから GET /janken で直接呼ばれた場合</span>
+@GetMapping("/janken")
+public String jankenGet() {
+  <span class="comment">// ユーザ名は何もお皿（Model）に乗せずに画面だけ返す</span>
+  return "janken.html";
+}</code></pre>
+      <p>👉 <strong>ここがポイント:</strong> 新しいタブで直接 <code>/janken</code> を開かれたときは、<code>userName</code> を一切渡さずに <code>janken.html</code> を返します。これにより「Hi ???? が表示されない」という受け入れ基準（AC2）をクリアします。</p>
+
+      <h3>② フォームから参加したときの処理（Task 1 [AC1] 対策）</h3>
+      <pre><code><span class="comment">// index.html のフォームから POST /janken で送られた場合</span>
+@PostMapping("/janken")
+public String jankenPost(@RequestParam String userName, ModelMap model) {
+  <span class="comment">// 封筒から名前を取り出し、お皿（model）に乗せる</span>
+  model.addAttribute("userName", userName);
+  return "janken.html";
+}</code></pre>
+      <p>👉 <strong><code>@RequestParam String userName</code>:</strong> フォームの <code>&lt;input name="userName"&gt;</code> で送られた文字を受け取る仕掛けです。<br>
+      👉 <strong><code>model.addAttribute("userName", userName)</code>:</strong> Thymeleaf（お皿）へ渡すために登録しています。</p>
+
+      <h3>③ グー・チョキ・パーを押したときの対戦処理（Task 2 [AC] 対策）</h3>
+      <pre><code>@GetMapping("/jankengame")
+public String jankenGame(@RequestParam String hand,
+                         @RequestParam(required = false) String userName,
+                         ModelMap model) {
+  <span class="comment">// 1. シェフ（Model）に頼んでじゃんけん勝敗を計算してもらう</span>
+  Janken janken = new Janken(hand);
+  
+  <span class="comment">// 2. 結果をお皿に乗せる</span>
+  model.addAttribute("janken", janken);
+
+  <span class="comment">// 3. ユーザ名があれば引き続きお皿に乗せておく</span>
+  if (userName != null && !userName.isEmpty()) {
+    model.addAttribute("userName", userName);
+  }
+  return "janken.html";
+}</code></pre>
+    </div>
+
+    <!-- セクション4: Janken.java (Model) の解説 -->
+    <div class="card">
+      <h2>4. <code>Janken.java</code> の役割（専門シェフ・ビジネスロジック）</h2>
+      <p>データの保持と、計算処理（ロジック）に特化したクラスです。</p>
+
+      <div class="analogy-box">
+        <div class="analogy-title">💡 なぜ Controller に全部書かずに、わざわざ分けるのか？</div>
+        <p>もしウェイターが厨房に入って魚をさばき始めたら、店は大混乱します。<br>
+        「注文を受け取る係（Controller）」と「料理を作る係（Model）」を分けることで、<strong>コードが綺麗になり、後からCPUの出し方を変えたりルールを追加したりするのが圧倒的に楽になる</strong>からです（これがいわゆるオブジェクト指向とMVCの基本です）。</p>
+      </div>
+
+      <pre><code>public class Janken {
+  private String myHand;  <span class="comment">// 自分の手</span>
+  private String cpuHand; <span class="comment">// 相手の手</span>
+  private String result;  <span class="comment">// 結果（勝ち/負け/あいこ）</span>
+
+  public Janken(String hand) {
+    this.myHand = hand;
+
+    <span class="comment">// 🎲 CPUの手をランダム（0:グー, 1:チョキ, 2:パー）で選ぶ</span>
+    String[] hands = {"グー", "チョキ", "パー"};
+    Random random = new Random();
+    this.cpuHand = hands[random.nextInt(3)];
+
+    <span class="comment">// ⚖️ 勝敗の判定ロジック</span>
+    if (this.myHand.equals(this.cpuHand)) {
+      this.result = "あいこ";
+    } else if (/* 自分が勝つパターン */) {
+      this.result = "勝ち";
+    } else {
+      this.result = "負け";
+    }
+  }
+
+  <span class="comment">// Thymeleafがお皿から値を読み取るための Getter が必須</span>
+  public String getMyHand() { return myHand; }
+  public String getCpuHand() { return cpuHand; }
+  public String getResult() { return result; }
+}</code></pre>
+    </div>
+
+    <!-- セクション5: janken.html (View) の解説 -->
+    <div class="card">
+      <h2>5. <code>templates/janken.html</code> の役割（盛り付け・画面表示）</h2>
+      <p>Javaから渡されたデータ（Model）を、Thymeleafというテンプレートエンジンを使ってHTMLに埋め込みます。</p>
+
+      <h3>① ユーザ名があるときだけ表示（`th:if`）</h3>
+      <pre><code><span class="comment">&lt;!-- userName が model に入っている時だけ、このタグが出現する --&gt;</span>
+&lt;div <span class="highlight">th:if="${userName}"</span>&gt;
+  &lt;h2&gt;Hi <span class="highlight">[[${userName}]]</span>&lt;/h2&gt;
+&lt;/div&gt;</code></pre>
+      <p>👉 直接アクセスされたときは <code>userName</code> が空なので、この <code>&lt;div&gt;</code> 自体が完全に非表示になります！</p>
+
+      <h3>② じゃんけんの手のリンク</h3>
+      <pre><code>&lt;div class="hand-links"&gt;
+  &lt;a <span class="highlight">th:href="@{/jankengame(hand='Gu', userName=${userName})}"</span>&gt;グー&lt;/a&gt;
+  &lt;a <span class="highlight">th:href="@{/jankengame(hand='Choki', userName=${userName})}"</span>&gt;チョキ&lt;/a&gt;
+  &lt;a <span class="highlight">th:href="@{/jankengame(hand='Pa', userName=${userName})}"</span>&gt;パー&lt;/a&gt;
+&lt;/div&gt;</code></pre>
+      <p>👉 <code>th:href="@{...}"</code> を使うと、現在の <code>userName</code> をパラメータとして自動的に引き継ぎながらリンクを作ってくれます。</p>
+
+      <h3>③ 対戦結果の表示</h3>
+      <pre><code><span class="comment">&lt;!-- janken モデルが渡されている時（手をクリックした後）のみ表示 --&gt;</span>
+&lt;div class="result-box" <span class="highlight">th:if="${janken}"</span>&gt;
+  &lt;p&gt;あなたの手: &lt;strong&gt;<span class="highlight">[[${janken.myHand}]]</span>&lt;/strong&gt;&lt;/p&gt;
+  &lt;p&gt;相手の手: &lt;strong&gt;<span class="highlight">[[${janken.cpuHand}]]</span>&lt;/strong&gt;&lt;/p&gt;
+  &lt;p class="result-text"&gt;結果: <span class="highlight">[[${janken.result}]]</span>&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+      <p>👉 <code>[[${janken.myHand}]]</code> と書くと、Java側の <code>janken.getMyHand()</code> を自動で呼び出して表示してくれます。</p>
+    </div>
+
+    <!-- セクション6: 受け入れ基準対応表 -->
+    <div class="card">
+      <h2>6. 課題の「受け入れ基準（AC）」との完全対応表</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>基準</th>
+            <th>動作シナリオ</th>
+            <th>なぜこのコードで達成できるか？</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Task 1<br>[AC1]</strong></td>
+            <td>トップで <code>taro</code> と入れて参加 → <code>Hi taro</code> と表示される</td>
+            <td><code>index.html</code> から POST で <code>userName</code> を送信し、Controller が ModelMap に詰めて Thymeleaf の <code>[[${userName}]]</code> で描画されるため。</td>
+          </tr>
+          <tr>
+            <td><strong>Task 1<br>[AC2]</strong></td>
+            <td>別タブで直接 <code>/janken</code> を開く → <code>Hi taro</code> は<strong>表示されない</strong></td>
+            <td><code>@GetMapping("/janken")</code> は <code>userName</code> を ModelMap に入れないため、<code>th:if="${userName}"</code> の条件が不成立になり非表示になるため。</td>
+          </tr>
+          <tr>
+            <td><strong>Task 2<br>[AC]</strong></td>
+            <td>グー・チョキ・パーをクリック → 「あなたの手」「相手の手」「結果（勝ち・負け・あいこ）」が表示</td>
+            <td><code>/jankengame?hand=...</code> で受信した手を <code>Janken</code> クラスに渡し、ランダムな相手の手と勝敗を計算して <code>janken.html</code> に反映されるため。</td>
+          </tr>
+          <tr>
+            <td><strong>発展課題</strong></td>
+            <td>CPUの手がランダムに出る</td>
+            <td><code>Janken.java</code> 内で <code>new Random().nextInt(3)</code> を使って毎回3つの手から抽選しているため。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px;">
+      <a href="/" class="back-btn">🎮 じゃんけんゲームのトップへ戻る</a>
+    </div>
+  </div>
+</body>
+
+</html>
