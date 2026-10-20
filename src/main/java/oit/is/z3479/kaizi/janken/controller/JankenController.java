@@ -1,6 +1,7 @@
 package oit.is.z3479.kaizi.janken.controller;
 
 import java.security.Principal;
+import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import oit.is.z3479.kaizi.janken.model.Entry;
 import oit.is.z3479.kaizi.janken.model.Janken;
+import oit.is.z3479.kaizi.janken.model.User;
+import oit.is.z3479.kaizi.janken.model.UserMapper;
 
 /**
  * じゃんけんアプリケーションのコントローラクラス
@@ -26,9 +29,12 @@ public class JankenController {
   @Autowired
   private Entry entry;
 
+  @Autowired
+  private UserMapper userMapper;
+
   /**
-   * Task 1 & Task 2: /janken へのGETリクエスト
-   * 認証済みユーザ名を取得し、Entry に追加して共有オブジェクトとしてModelMapに渡す
+   * Task 1 & Task 2 & Task 3: /janken へのGETリクエスト
+   * 認証済みユーザ名を取得し、DBから全ユーザ一覧を取得してModelMapに渡す
    */
   @GetMapping("/janken")
   public String jankenGet(Principal prin, ModelMap model) {
@@ -38,6 +44,10 @@ public class JankenController {
       model.addAttribute("userName", loginUser);
     }
     model.addAttribute("entry", this.entry);
+
+    ArrayList<User> users = userMapper.selectAllUsers();
+    model.addAttribute("users", users);
+
     return "janken.html";
   }
 
@@ -75,6 +85,9 @@ public class JankenController {
     // じゃんけんの勝敗判定
     Janken janken = new Janken(hand);
     model.addAttribute("janken", janken);
+
+    ArrayList<User> users = userMapper.selectAllUsers();
+    model.addAttribute("users", users);
 
     return "janken.html";
   }
