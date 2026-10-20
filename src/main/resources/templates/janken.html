@@ -1,5 +1,11 @@
+<!--
+  【AI活用と学習に関する注記】
+  本画面（Thymeleafテンプレート）の実装は生成AIを活用して作成していますが、
+  Spring Security連携やDIによるオブジェクト共有の画面描画について、
+  受講生自身がAIと一緒に動作原理を理解した上で組み込んでいます。
+-->
 <!DOCTYPE html>
-<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.springframework.org/schema/security">
 
 <head>
   <meta charset="UTF-8">
@@ -12,6 +18,50 @@
       gap: 16px;
       font-family: sans-serif;
       margin-top: 40px;
+    }
+
+    .logout-bar {
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .logout-bar a {
+      color: #dc3545;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .logout-bar a:hover {
+      text-decoration: underline;
+    }
+
+    .entry-box {
+      background-color: #e9ecef;
+      border: 1px solid #ced4da;
+      border-radius: 8px;
+      padding: 12px 24px;
+      min-width: 250px;
+      text-align: left;
+    }
+
+    .entry-box h3 {
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+
+    .entry-box ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .entry-count {
+      margin-top: 8px;
+      margin-bottom: 0;
+      font-size: 14px;
+      color: #495057;
+      font-weight: bold;
     }
 
     .hand-links {
@@ -63,21 +113,34 @@
 </head>
 
 <body>
+  <div class="logout-bar">
+    <a href="/logout">ログアウト</a>
+  </div>
+
   <h1>じゃんけんゲーム</h1>
 
-  <!-- Task 1: index.htmlから参加した場合のみ userName が渡されるため表示される -->
+  <!-- ログインユーザ名の表示 -->
   <div th:if="${userName}">
     <h2>Hi [[${userName}]]</h2>
   </div>
 
-  <!-- Task 2: じゃんけんの手を選択するリンク -->
-  <div class="hand-links">
-    <a th:href="@{/jankengame(hand='Gu', userName=${userName})}">グー</a>
-    <a th:href="@{/jankengame(hand='Choki', userName=${userName})}">チョキ</a>
-    <a th:href="@{/jankengame(hand='Pa', userName=${userName})}">パー</a>
+  <!-- Task 2: エントリー中のユーザ一覧および人数表示 (DIオブジェクト共有) -->
+  <div class="entry-box" th:if="${entry}">
+    <h3>エントリー</h3>
+    <ul>
+      <li th:each="user : ${entry.users}">[[${user}]]</li>
+    </ul>
+    <p class="entry-count" th:if="${entry.users != null}">今[[${entry.users.size()}]]人がエントリーしています</p>
   </div>
 
-  <!-- Task 2: 対戦結果の表示（jankenモデルが渡された場合のみ表示） -->
+  <!-- じゃんけんの手を選択するリンク -->
+  <div class="hand-links">
+    <a th:href="@{/jankengame(hand='Gu')}">グー</a>
+    <a th:href="@{/jankengame(hand='Choki')}">チョキ</a>
+    <a th:href="@{/jankengame(hand='Pa')}">パー</a>
+  </div>
+
+  <!-- 対戦結果の表示（jankenモデルが渡された場合のみ表示） -->
   <div class="result-box" th:if="${janken}">
     <p>あなたの手: <strong>[[${janken.myHand}]]</strong></p>
     <p>相手の手: <strong>[[${janken.cpuHand}]]</strong></p>
