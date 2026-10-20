@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -114,6 +115,54 @@ public class JankenController {
     }
     User oppUser = userMapper.selectById(id);
     model.addAttribute("oppUser", oppUser);
+    return "match.html";
+  }
+
+  /**
+   * Task 6: じゃんけんの試合を行い、結果をDBに登録してmatch.htmlに表示する
+   */
+  @GetMapping("/fight")
+  @Transactional
+  public String fight(@RequestParam int id, @RequestParam String hand, Principal prin, ModelMap model) {
+    String loginUser = (prin != null) ? prin.getName() : "ほんだ";
+    model.addAttribute("myUser", loginUser);
+
+    User myUserInfo = userMapper.selectByName(loginUser);
+    User oppUser = userMapper.selectById(id);
+    model.addAttribute("oppUser", oppUser);
+
+    // CPUの手（仕様上、固定の手でよい）
+    String cpuHand = "Gu";
+
+    // 試合情報をDBに登録
+    Match match = new Match();
+    if (myUserInfo != null) {
+      match.setUser1(myUserInfo.getId());
+    } else {
+      match.setUser1(2);
+    }
+    match.setUser2(id);
+    match.setUser1Hand(hand);
+    match.setUser2Hand(cpuHand);
+    matchMapper.insertMatch(match);
+
+    // 勝敗判定
+    String result = "";
+    if (hand.equals(cpuHand)) {
+      result = "Draw";
+    } else if ((hand.equals("Gu") && cpuHand.equals("Choki"))
+        || (hand.equals("Choki") && cpuHand.equals("Pa"))
+        || (hand.equals("Pa") && cpuHand.equals("Gu"))) {
+      result = "You Win!";
+    } else {
+      result = "CPU Win!";
+    }
+
+    model.addAttribute("match", match);
+    model.addAttribute("myHand", hand);
+    model.addAttribute("cpuHand", cpuHand);
+    model.addAttribute("result", result);
+
     return "match.html";
   }
 
