@@ -42,7 +42,7 @@ public class JankenAuthConfiguration {
 
   /**
    * 認証処理に関する設定
-   * ユーザID: user1, user2
+   * ユーザID: user1, user2, ほんだ
    * ロール: USER
    * パスワード: isdev (BCryptハッシュ化)
    */
@@ -54,8 +54,11 @@ public class JankenAuthConfiguration {
     UserDetails user2 = User.withUsername("user2")
         .password("{bcrypt}$2a$10$VO8eAhaTmPLPIPoMGlQ4HOuXz8ci2azqtwziFE.cTo30s4fA2u3Ka")
         .roles("USER").build();
+    UserDetails user3 = User.withUsername("ほんだ")
+        .password("{bcrypt}$2a$10$VO8eAhaTmPLPIPoMGlQ4HOuXz8ci2azqtwziFE.cTo30s4fA2u3Ka")
+        .roles("USER").build();
 
-    return new InMemoryUserDetailsManager(user1, user2);
+    return new InMemoryUserDetailsManager(user1, user2, user3);
   }
 
 }

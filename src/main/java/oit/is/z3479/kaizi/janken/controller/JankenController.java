@@ -1,5 +1,7 @@
 package oit.is.z3479.kaizi.janken.controller;
 
+import java.security.Principal;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,11 +14,14 @@ import oit.is.z3479.kaizi.janken.model.Janken;
 public class JankenController {
 
   /**
-   * Task 1 [AC2]: 直接 /janken にアクセスされた場合
-   * ユーザ名は渡さず、janken.html の初期画面（リンクのみ）を表示する
+   * Task 1 [AC1]: 直接 /janken にアクセスされた場合（認証済み）
+   * ログインしたユーザ名を ModelMap に格納して janken.html を表示する
    */
   @GetMapping("/janken")
-  public String jankenGet() {
+  public String jankenGet(Principal prin, ModelMap model) {
+    if (prin != null) {
+      model.addAttribute("userName", prin.getName());
+    }
     return "janken.html";
   }
 
