@@ -146,6 +146,31 @@
     <p class="result-text">結果: [[${janken.result}]]</p>
   </div>
 
+  <!-- Task 4: 試合結果一覧の表示 (DBから取得) -->
+  <div class="result-box" th:if="${matches}">
+    <h3>試合結果</h3>
+    <table border="1" style="margin: 0 auto; border-collapse: collapse; text-align: center;">
+      <thead>
+        <tr style="background-color: #e9ecef;">
+          <th style="padding: 4px 12px;">id</th>
+          <th style="padding: 4px 12px;">user1</th>
+          <th style="padding: 4px 12px;">user2</th>
+          <th style="padding: 4px 12px;">user1Hand</th>
+          <th style="padding: 4px 12px;">user2Hand</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="match : ${matches}">
+          <td style="padding: 4px 12px;">[[${match.id}]]</td>
+          <td style="padding: 4px 12px;">[[${match.user1}]]</td>
+          <td style="padding: 4px 12px;">[[${match.user2}]]</td>
+          <td style="padding: 4px 12px;">[[${match.user1Hand}]]</td>
+          <td style="padding: 4px 12px;">[[${match.user2Hand}]]</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
   <div class="top-link">
     <a href="/">トップページ（index.html）へ戻る</a>
   </div>

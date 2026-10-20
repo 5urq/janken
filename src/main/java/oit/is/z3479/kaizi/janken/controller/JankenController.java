@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import oit.is.z3479.kaizi.janken.model.Entry;
 import oit.is.z3479.kaizi.janken.model.Janken;
+import oit.is.z3479.kaizi.janken.model.Match;
+import oit.is.z3479.kaizi.janken.model.MatchMapper;
 import oit.is.z3479.kaizi.janken.model.User;
 import oit.is.z3479.kaizi.janken.model.UserMapper;
 
@@ -32,9 +34,12 @@ public class JankenController {
   @Autowired
   private UserMapper userMapper;
 
+  @Autowired
+  private MatchMapper matchMapper;
+
   /**
-   * Task 1 & Task 2 & Task 3: /janken へのGETリクエスト
-   * 認証済みユーザ名を取得し、DBから全ユーザ一覧を取得してModelMapに渡す
+   * Task 1 & Task 2 & Task 3 & Task 4: /janken へのGETリクエスト
+   * 認証済みユーザ名を取得し、DBから全ユーザ一覧および試合結果一覧を取得してModelMapに渡す
    */
   @GetMapping("/janken")
   public String jankenGet(Principal prin, ModelMap model) {
@@ -47,6 +52,9 @@ public class JankenController {
 
     ArrayList<User> users = userMapper.selectAllUsers();
     model.addAttribute("users", users);
+
+    ArrayList<Match> matches = matchMapper.selectAllMatches();
+    model.addAttribute("matches", matches);
 
     return "janken.html";
   }
@@ -88,6 +96,9 @@ public class JankenController {
 
     ArrayList<User> users = userMapper.selectAllUsers();
     model.addAttribute("users", users);
+
+    ArrayList<Match> matches = matchMapper.selectAllMatches();
+    model.addAttribute("matches", matches);
 
     return "janken.html";
   }
