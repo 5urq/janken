@@ -103,4 +103,18 @@ public class JankenController {
     return "janken.html";
   }
 
+  /**
+   * Task 5: 相手ユーザのidを受け取り試合画面へ移動する
+   */
+  @GetMapping("/match")
+  public String match(@RequestParam int id, Principal prin, ModelMap model) {
+    if (prin != null) {
+      String loginUser = prin.getName();
+      model.addAttribute("myUser", loginUser);
+    }
+    User oppUser = userMapper.selectById(id);
+    model.addAttribute("oppUser", oppUser);
+    return "match.html";
+  }
+
 }

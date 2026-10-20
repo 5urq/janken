@@ -128,7 +128,7 @@
   <div class="entry-box" th:if="${users}">
     <h3>エントリー</h3>
     <ul>
-      <li th:each="user : ${users}">[[${user.name}]]</li>
+      <li th:each="user : ${users}"><a th:href="@{/match(id=${user.id})}"> [[${user.name}]]</a></li>
     </ul>
   </div>
 
