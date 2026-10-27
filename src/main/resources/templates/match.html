@@ -86,19 +86,19 @@
 
   <h1>試合</h1>
 
-  <!-- Task 5: ほんだ vs CPU などの対戦相手表示 -->
+  <!-- 対戦相手表示 -->
   <div th:if="${myUser != null and oppUser != null}">
     <h2>[[${myUser}]] vs [[${oppUser.name}]]</h2>
   </div>
 
-  <!-- Task 6: じゃんけんの手のリンク -->
+  <!-- じゃんけんの手のリンク -->
   <div class="hand-links" th:if="${oppUser}">
-    <a th:href="@{/fight(id=${oppUser.id}, hand='Gu')}">グー</a>
-    <a th:href="@{/fight(id=${oppUser.id}, hand='Choki')}">チョキ</a>
-    <a th:href="@{/fight(id=${oppUser.id}, hand='Pa')}">パー</a>
+    <a th:href="@{/wait(id=${oppUser.id}, hand='Gu')}">グー</a>
+    <a th:href="@{/wait(id=${oppUser.id}, hand='Choki')}">チョキ</a>
+    <a th:href="@{/wait(id=${oppUser.id}, hand='Pa')}">パー</a>
   </div>
 
-  <!-- Task 6: 対戦結果の表示 -->
+  <!-- 対戦結果の表示（互換性用） -->
   <div class="result-box" th:if="${result}">
     <p>[[${myUser}]]の手: <strong>[[${myHand}]]</strong></p>
     <p>[[${oppUser.name}]]の手: <strong>[[${cpuHand}]]</strong></p>

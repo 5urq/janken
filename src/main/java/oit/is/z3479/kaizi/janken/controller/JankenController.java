@@ -14,18 +14,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import oit.is.z3479.kaizi.janken.model.Entry;
 import oit.is.z3479.kaizi.janken.model.Janken;
 import oit.is.z3479.kaizi.janken.model.Match;
+import oit.is.z3479.kaizi.janken.model.MatchInfo;
+import oit.is.z3479.kaizi.janken.model.MatchInfoMapper;
 import oit.is.z3479.kaizi.janken.model.MatchMapper;
 import oit.is.z3479.kaizi.janken.model.User;
 import oit.is.z3479.kaizi.janken.model.UserMapper;
 
-/**
- * じゃんけんアプリケーションのコントローラクラス
- *
- * 【AI活用と学習に関する注記】
- * 本機能の実装コードは生成AIを活用して作成していますが、解説ドキュメントの作成および対話を通じて、
- * 認証・認可の仕組み（Spring Security）やDI（依存性注入）によるシングルトンオブジェクトの共有機構について、
- * 受講生自身がAIと一緒に動作原理を理解した上で組み込んでいます。
- */
 @Controller
 public class JankenController {
 
@@ -38,9 +32,11 @@ public class JankenController {
   @Autowired
   private MatchMapper matchMapper;
 
+  @Autowired
+  private MatchInfoMapper matchInfoMapper;
+
   /**
-   * Task 1 & Task 2 & Task 3 & Task 4: /janken へのGETリクエスト
-   * 認証済みユーザ名を取得し、DBから全ユーザ一覧および試合結果一覧を取得してModelMapに渡す
+   * /janken へのGETリクエスト
    */
   @GetMapping("/janken")
   public String jankenGet(Principal prin, ModelMap model) {
@@ -57,12 +53,12 @@ public class JankenController {
     ArrayList<Match> matches = matchMapper.selectAllMatches();
     model.addAttribute("matches", matches);
 
+    ArrayList<MatchInfo> activeMatches = matchInfoMapper.selectAllActiveMatches();
+    model.addAttribute("activeMatches", activeMatches);
+
     return "janken.html";
   }
 
-  /**
-   * 前回のPOSTフォーム対応（残しておくことで互換性を維持）
-   */
   @PostMapping("/janken")
   public String jankenPost(@RequestParam String userName, ModelMap model) {
     if (userName != null && !userName.isEmpty()) {
@@ -73,15 +69,11 @@ public class JankenController {
     return "janken.html";
   }
 
-  /**
-   * じゃんけんの手を選択した際のGETリクエスト
-   */
   @GetMapping("/jankengame")
   public String jankenGame(@RequestParam String hand,
       @RequestParam(required = false) String userName,
       Principal prin,
       ModelMap model) {
-    // ログインユーザ情報の保持・エントリー追加
     if (prin != null) {
       String loginUser = prin.getName();
       this.entry.addUser(loginUser);
@@ -91,7 +83,6 @@ public class JankenController {
     }
     model.addAttribute("entry", this.entry);
 
-    // じゃんけんの勝敗判定
     Janken janken = new Janken(hand);
     model.addAttribute("janken", janken);
 
@@ -101,11 +92,14 @@ public class JankenController {
     ArrayList<Match> matches = matchMapper.selectAllMatches();
     model.addAttribute("matches", matches);
 
+    ArrayList<MatchInfo> activeMatches = matchInfoMapper.selectAllActiveMatches();
+    model.addAttribute("activeMatches", activeMatches);
+
     return "janken.html";
   }
 
   /**
-   * Task 5: 相手ユーザのidを受け取り試合画面へ移動する
+   * 相手ユーザのidを受け取り試合画面へ移動する
    */
   @GetMapping("/match")
   public String match(@RequestParam int id, Principal prin, ModelMap model) {
@@ -119,7 +113,29 @@ public class JankenController {
   }
 
   /**
-   * Task 6: じゃんけんの試合を行い、結果をDBに登録してmatch.htmlに表示する
+   * task2: 相手を選び手を選んで wait.html へ遷移する（matchinfo に登録）
+   */
+  @GetMapping("/wait")
+  @Transactional
+  public String waitPage(@RequestParam int id, @RequestParam String hand, Principal prin, ModelMap model) {
+    String loginUser = (prin != null) ? prin.getName() : "ほんだ";
+    model.addAttribute("myUser", loginUser);
+
+    User myUserInfo = userMapper.selectByName(loginUser);
+    int myUserId = (myUserInfo != null) ? myUserInfo.getId() : 2;
+
+    MatchInfo matchInfo = new MatchInfo();
+    matchInfo.setUser1(myUserId);
+    matchInfo.setUser2(id);
+    matchInfo.setUser1Hand(hand);
+    matchInfo.setActive(true);
+    matchInfoMapper.insertMatchInfo(matchInfo);
+
+    return "wait.html";
+  }
+
+  /**
+   * 旧来の対戦処理（互換性用）
    */
   @GetMapping("/fight")
   @Transactional
@@ -131,10 +147,8 @@ public class JankenController {
     User oppUser = userMapper.selectById(id);
     model.addAttribute("oppUser", oppUser);
 
-    // CPUの手（仕様上、固定の手でよい）
     String cpuHand = "Gu";
 
-    // 試合情報をDBに登録
     Match match = new Match();
     if (myUserInfo != null) {
       match.setUser1(myUserInfo.getId());
@@ -147,7 +161,6 @@ public class JankenController {
     match.setActive(false);
     matchMapper.insertMatch(match);
 
-    // 勝敗判定
     String result = "";
     if (hand.equals(cpuHand)) {
       result = "Draw";

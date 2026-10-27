@@ -1,9 +1,3 @@
-<!--
-  【AI活用と学習に関する注記】
-  本画面（Thymeleafテンプレート）の実装は生成AIを活用して作成していますが、
-  Spring Security連携やDIによるオブジェクト共有の画面描画について、
-  受講生自身がAIと一緒に動作原理を理解した上で組み込んでいます。
--->
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.springframework.org/schema/security">
 
@@ -54,14 +48,6 @@
     .entry-box ul {
       margin: 0;
       padding-left: 20px;
-    }
-
-    .entry-count {
-      margin-top: 8px;
-      margin-bottom: 0;
-      font-size: 14px;
-      color: #495057;
-      font-weight: bold;
     }
 
     .hand-links {
@@ -132,6 +118,29 @@
     </ul>
   </div>
 
+  <!-- アクティブな試合一覧表示 -->
+  <div class="result-box" th:if="${activeMatches != null and !activeMatches.isEmpty()}">
+    <h3>アクティブな試合</h3>
+    <table border="1" style="margin: 0 auto; border-collapse: collapse; text-align: center;">
+      <thead>
+        <tr style="background-color: #e9ecef;">
+          <th style="padding: 4px 12px;">id</th>
+          <th style="padding: 4px 12px;">user1</th>
+          <th style="padding: 4px 12px;">user2</th>
+          <th style="padding: 4px 12px;">user1Hand</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="activeMatch : ${activeMatches}">
+          <td style="padding: 4px 12px;">[[${activeMatch.id}]]</td>
+          <td style="padding: 4px 12px;">[[${activeMatch.user1}]]</td>
+          <td style="padding: 4px 12px;">[[${activeMatch.user2}]]</td>
+          <td style="padding: 4px 12px;">[[${activeMatch.user1Hand}]]</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
   <!-- じゃんけんの手を選択するリンク -->
   <div class="hand-links">
     <a th:href="@{/jankengame(hand='Gu')}">グー</a>
@@ -139,14 +148,14 @@
     <a th:href="@{/jankengame(hand='Pa')}">パー</a>
   </div>
 
-  <!-- 対戦結果の表示（jankenモデルが渡された場合のみ表示） -->
+  <!-- 対戦結果の表示（Jankenモデルが渡された場合のみ表示） -->
   <div class="result-box" th:if="${janken}">
     <p>あなたの手: <strong>[[${janken.myHand}]]</strong></p>
     <p>相手の手: <strong>[[${janken.cpuHand}]]</strong></p>
     <p class="result-text">結果: [[${janken.result}]]</p>
   </div>
 
-  <!-- Task 4: 試合結果一覧の表示 (DBから取得) -->
+  <!-- 試合結果一覧の表示 (DBから取得) -->
   <div class="result-box" th:if="${matches}">
     <h3>試合結果</h3>
     <table border="1" style="margin: 0 auto; border-collapse: collapse; text-align: center;">
