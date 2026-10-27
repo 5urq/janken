@@ -18,4 +18,10 @@ public interface MatchMapper {
   @Options(useGeneratedKeys = true, keyColumn = "id", keyProperty = "id")
   void insertMatch(Match match);
 
+  @Select("SELECT * FROM matches WHERE isActive = TRUE ORDER BY id DESC LIMIT 1")
+  Match selectActiveMatch();
+
+  @Update("UPDATE matches SET isActive = #{isActive} WHERE id = #{id}")
+  void updateMatchActive(int id, boolean isActive);
+
 }
