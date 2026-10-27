@@ -113,7 +113,7 @@ public class JankenController {
   }
 
   /**
-   * task2: 相手を選び手を選んで wait.html へ遷移する（matchinfo に登録）
+   * task2 & task3: 対戦の待機と成立（DB処理）
    */
   @GetMapping("/wait")
   @Transactional
@@ -124,12 +124,33 @@ public class JankenController {
     User myUserInfo = userMapper.selectByName(loginUser);
     int myUserId = (myUserInfo != null) ? myUserInfo.getId() : 2;
 
-    MatchInfo matchInfo = new MatchInfo();
-    matchInfo.setUser1(myUserId);
-    matchInfo.setUser2(id);
-    matchInfo.setUser1Hand(hand);
-    matchInfo.setActive(true);
-    matchInfoMapper.insertMatchInfo(matchInfo);
+    // 相手(id)が自分(myUserId)に対して待機中(user1=id, user2=myUserId, isActive=TRUE)のレコードがあるか確認
+    MatchInfo pendingMatch = matchInfoMapper.selectActiveMatchInfo(id, myUserId);
+
+    if (pendingMatch != null) {
+      // 試合成立！
+      // 1. matches テーブルに INSERT (user1=先手(id), user2=後手(myUserId), user1Hand=相手の手, user2Hand=自分の手, isActive=TRUE)
+      Match match = new Match();
+      match.setUser1(pendingMatch.getUser1());
+      match.setUser2(myUserId);
+      match.setUser1Hand(pendingMatch.getUser1Hand());
+      match.setUser2Hand(hand);
+      match.setActive(true);
+      matchMapper.insertMatch(match);
+
+      // 2. matchinfo テーブルの該当レコードの isActive を FALSE に更新
+      matchInfoMapper.updateMatchInfoActive(pendingMatch.getId(), false);
+
+      model.addAttribute("match", match);
+    } else {
+      // 自分が先手の場合：matchinfo に登録して待機
+      MatchInfo matchInfo = new MatchInfo();
+      matchInfo.setUser1(myUserId);
+      matchInfo.setUser2(id);
+      matchInfo.setUser1Hand(hand);
+      matchInfo.setActive(true);
+      matchInfoMapper.insertMatchInfo(matchInfo);
+    }
 
     return "wait.html";
   }
