@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>相手の手を待っています</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      font-family: sans-serif;
+      margin-top: 40px;
+    }
+
+    .logout-bar {
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .logout-bar a {
+      color: #dc3545;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .logout-bar a:hover {
+      text-decoration: underline;
+    }
+
+    .wait-box {
+      background-color: #f8f9fa;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      padding: 20px 40px;
+      text-align: center;
+      min-width: 250px;
+    }
+
+    .top-link {
+      margin-top: 24px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="logout-bar">
+    <a href="/logout">ログアウト</a>
+  </div>
+
+  <div th:if="${myUser}">
+    <h1>Hi [[${myUser}]]</h1>
+  </div>
+
+  <div class="wait-box">
+    <h2>相手の手を待ってます</h2>
+  </div>
+
+  <div class="top-link">
+    <a href="/janken">もどる</a>
+  </div>
+</body>
+
+</html>
