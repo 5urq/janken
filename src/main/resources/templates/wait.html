@@ -31,7 +31,8 @@
       text-decoration: underline;
     }
 
-    .wait-box {
+    .wait-box,
+    .result-box {
       background-color: #f8f9fa;
       border: 2px solid #dee2e6;
       border-radius: 8px;
@@ -40,11 +41,43 @@
       min-width: 250px;
     }
 
+    .result-text {
+      font-size: 20px;
+      font-weight: bold;
+      color: #d9534f;
+    }
+
     .top-link {
       margin-top: 24px;
       font-size: 14px;
     }
   </style>
+  <script>
+    window.onload = function () {
+      var sse = new EventSource('/kekka');
+      sse.onmessage = function (event) {
+        console.log("SSE received:", event.data);
+        var match = JSON.parse(event.data);
+        var waitBox = document.getElementById("wait_box");
+        var resultArea = document.getElementById("result_area");
+
+        if (waitBox) {
+          waitBox.style.display = "none";
+        }
+
+        if (resultArea) {
+          resultArea.innerHTML = "<h2>対戦結果</h2>"
+            + "<p>試合ID: " + match.id + "</p>"
+            + "<p>ユーザ1 (ID: " + match.user1 + "): " + match.user1Hand + "</p>"
+            + "<p>ユーザ2 (ID: " + match.user2 + "): " + match.user2Hand + "</p>"
+            + "<p><a href='/janken'>[もどる]</a></p>";
+          resultArea.style.display = "block";
+        }
+
+        sse.close();
+      };
+    };
+  </script>
 </head>
 
 <body>
@@ -56,9 +89,11 @@
     <h1>Hi [[${myUser}]]</h1>
   </div>
 
-  <div class="wait-box">
+  <div id="wait_box" class="wait-box">
     <h2>相手の手を待ってます</h2>
   </div>
+
+  <div id="result_area" class="result-box" style="display: none;"></div>
 
   <div class="top-link">
     <a href="/janken">もどる</a>
