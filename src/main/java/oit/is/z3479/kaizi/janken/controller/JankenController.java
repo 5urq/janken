@@ -144,6 +144,7 @@ public class JankenController {
     match.setUser2(id);
     match.setUser1Hand(hand);
     match.setUser2Hand(cpuHand);
+    match.setActive(false);
     matchMapper.insertMatch(match);
 
     // 勝敗判定

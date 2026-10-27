@@ -9,23 +9,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
-/**
- * セキュリティ（認証・認可）の設定クラス
- *
- * 【AI活用と学習に関する注記】
- * 本認証設定コードは生成AIを活用して作成していますが、解説ドキュメントの作成および対話を通じて、
- * 認証（InMemoryUserDetailsManager・BCrypt）および認可（SecurityFilterChain）の挙動について、
- * 受講生自身がAIと一緒に動作原理を理解した上で組み込んでいます。
- */
 @Configuration
 @EnableWebSecurity
 public class JankenAuthConfiguration {
 
   /**
    * 認可処理に関する設定
-   * 1. Spring Securityのフォームを利用する
-   * 2. /janken で始まるURLへのアクセス時に認証を必要とする
-   * 3. ログアウト時にはトップページ (http://localhost:8080/) に戻る
    */
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -47,7 +36,7 @@ public class JankenAuthConfiguration {
 
   /**
    * 認証処理に関する設定
-   * ユーザID: user1, user2, ほんだ
+   * ユーザID: user1, user2, ほんだ, いがき
    * ロール: USER
    * パスワード: isdev (BCryptハッシュ化)
    */
@@ -62,8 +51,11 @@ public class JankenAuthConfiguration {
     UserDetails user3 = User.withUsername("ほんだ")
         .password("{bcrypt}$2a$10$VO8eAhaTmPLPIPoMGlQ4HOuXz8ci2azqtwziFE.cTo30s4fA2u3Ka")
         .roles("USER").build();
+    UserDetails user4 = User.withUsername("いがき")
+        .password("{bcrypt}$2a$10$VO8eAhaTmPLPIPoMGlQ4HOuXz8ci2azqtwziFE.cTo30s4fA2u3Ka")
+        .roles("USER").build();
 
-    return new InMemoryUserDetailsManager(user1, user2, user3);
+    return new InMemoryUserDetailsManager(user1, user2, user3, user4);
   }
 
 }
